@@ -21,8 +21,15 @@ export default {
 			},
   			foreground: 'hsl(var(--foreground))',
   			card: {
-  				DEFAULT: '#0070DF',
-  				foreground: '#B2EFFF'
+  				background: '#0070DF33',
+				bg: "#0070DF",
+  				foreground: '#B2EFFF',
+				100: '#9BB0C7',
+				200: '#ADB8CF',
+				300: '#C6C4D8',
+				400: '#DAD3E1',
+				500: '#EBE2EA',
+				600: '#F8F3F5',
   			},
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
@@ -44,6 +51,7 @@ export default {
 				  100: '#F6F6F6',
 				  200: '#E7E7E7',
 				  300: '#D1D1D1',
+				  400: '#2A313C',
 			},
 			blue: "#0858A0",
 			green : "#6BBD6E",

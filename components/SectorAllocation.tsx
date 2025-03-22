@@ -1,18 +1,32 @@
 import { Card, CardContent } from "@/components/ui/card";
 
-const data = [
-    { sector: "Financial", amount: "₹1,95,000", percentage: "34%", bg: "bg-blue-300" },
-    { sector: "Healthcare", amount: "₹83,250", percentage: "14.5%", bg: "bg-blue-400" },
-    { sector: "Technology", amount: "₹1,11,000", percentage: "19%", bg: "bg-purple-300" },
-    { sector: "Consumer Goods", amount: "₹55,500", percentage: "9.5%", bg: "bg-purple-200" },
-    { sector: "Energy", amount: "₹55,500", percentage: "9.5%", bg: "bg-purple-200" },
-    { sector: "Other Sectors", amount: "₹55,500", percentage: "9.5%", bg: "bg-purple-200" },
-];
+interface SectorData {
+    sector: string;
+    amount: string;
+    percentage: string;
+    bg: string;
+    size: string;
+}
 
-export default function SectorAllocation() {
+interface SectorAllocationProps {
+    data: SectorData[];
+}
+
+export default function SectorAllocation({ data }: SectorAllocationProps) {
     return (
-        <div className="flex flex-col">
-            Sector Allocation
+        <div className="bg-dark-200 border-dark-200 p-6 rounded-xl mb-6">
+            <h2 className="text-white text-lg font-semibold mb-4">Sector Allocation</h2>
+            <div className="grid grid-cols-6 gap-4 grid-rows-2 w-full h-80">
+                {data.map((sector, index) => (
+                    <Card key={index} className={`${sector.bg} p-4 flex flex-col justify-between ${sector.size}`}>
+                        <CardContent className="p-0">
+                            <p className="text-md font-semibold text-text-400">{sector.sector}</p>
+                            <p className="text-sm  text-text-400">{sector.amount}</p>
+                            <p className="text-3xl font-bold mt-12 text-text-400">{sector.percentage}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
     );
 }

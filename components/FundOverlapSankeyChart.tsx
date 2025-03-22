@@ -221,7 +221,7 @@ const FundOverlapSankeyChart = () => {
     const { stockCount, overlapPercentage } = getOverlapMetrics(selectedFund);
 
     return (
-        <Card className="w-full bg-dark-200 text-white">
+        <Card className="w-full bg-dark-200 border-dark-200 rounded-xl text-white">
             <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
                     <CardTitle className="text-xl text-white">Overlap Analysis</CardTitle>
