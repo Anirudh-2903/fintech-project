@@ -7,21 +7,21 @@ export function PerformanceMetricsSkeleton() {
         <div className="space-y-6 animate-pulse">
             {/* Performance Summary Skeleton */}
             <div className="mb-6">
-                <Skeleton className="h-6 w-48 mb-4" /> {/* Heading */}
+                <Skeleton className="h-6 w-48 mb-4" />
                 <div className="bg-dark-100 rounded-xl p-4 w-fit">
-                    <Skeleton className="h-8 w-40 mb-2" /> {/* Total Portfolio Value */}
+                    <Skeleton className="h-8 w-40 mb-2" />
                     <div className="flex items-center gap-2">
-                        <Skeleton className="h-4 w-4" /> {/* Icon */}
-                        <Skeleton className="h-4 w-20" /> {/* Returns */}
-                        <Skeleton className="h-4 w-4" /> {/* Divider */}
-                        <Skeleton className="h-4 w-20" /> {/* Percentage */}
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-20" />
                     </div>
                 </div>
             </div>
 
             {/* Chart Skeleton */}
-            <div className="h-64 w-full"> {/* Ensure full width and fixed height */}
-                <Skeleton className="h-full w-full" /> {/* Chart Placeholder */}
+            <div className="h-64 w-full">
+                <Skeleton className="h-full w-full" />
             </div>
 
             {/* Time Period Buttons Skeleton */}

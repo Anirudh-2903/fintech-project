@@ -1,6 +1,6 @@
 # Investment Portfolio Dashboard
 
-![Dashboard Screenshot](./public/screenshot.png) <!-- Add a screenshot here -->
+![Dashboard Screenshot](./public/screenshot.png)
 
 A modern investment portfolio dashboard built with Next.js, Supabase, and Chart.js. Track your investments, analyze performance metrics, and visualize portfolio composition with responsive and interactive charts.
 

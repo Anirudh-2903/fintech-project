@@ -28,12 +28,10 @@ export default function SectorAllocation({ data, stockAllocations, mutualFunds }
     const [selectedSector, setSelectedSector] = useState<string | null>(null);
     const [selectedCardBg, setSelectedCardBg] = useState<string | null>(null);
 
-    // Filter stocks by selected sector
     const sectorStocks = selectedSector
         ? stockAllocations.filter((stock) => stock.sector === selectedSector)
         : [];
 
-    // Group stocks by name and collect mutual funds
     const groupedStocks = sectorStocks.reduce((acc, stock) => {
         if (!acc[stock.stock_name]) {
             acc[stock.stock_name] = {
@@ -58,7 +56,7 @@ export default function SectorAllocation({ data, stockAllocations, mutualFunds }
                         className={`${sector.bg} p-4 flex flex-col justify-between cursor-pointer ${sector.size}`}
                         onClick={() => {
                             setSelectedSector(sector.sector);
-                            setSelectedCardBg(sector.bg); // Set the background of the clicked card
+                            setSelectedCardBg(sector.bg);
                         }}
                     >
                         <CardContent className="p-0">

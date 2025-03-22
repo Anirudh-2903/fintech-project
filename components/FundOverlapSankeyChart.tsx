@@ -137,10 +137,8 @@ const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlap
                 if (selectedFund === null) {
                     return d.color;
                 } else if (d.id < funds.length) {
-                    // This is a fund
                     return d.id === selectedFund ? d.color : `${d.color}88`;
                 } else {
-                    // This is a stock - check if it's connected to the selected fund
                     const isConnected = links.some((link) =>
                         link.fundId === selectedFund && link.target === d.id
                     );
@@ -154,7 +152,6 @@ const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlap
             .on("click", (event, d) => {
                 // Only make funds clickable
                 if (d.id < funds.length) {
-                    // Toggle selection
                     setSelectedFund(selectedFund === d.id ? null : d.id);
                 }
             });
@@ -167,8 +164,7 @@ const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlap
                 const name = d.name;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const [line1, line2] = splitNameIntoTwoLines(name);
-                // Adjust vertical offset based on the number of lines
-                return line2 ? "-0.6em" : "0.35em"; // Move up slightly for two-line labels
+                return line2 ? "-0.6em" : "0.35em";
             })
             .attr("text-anchor", (d) => (d.id < funds.length ? "end" : "start"))
             .attr("font-size", "10px")
@@ -189,7 +185,7 @@ const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlap
             .data((d) => {
                 const name = d.name;
                 const [line1, line2] = splitNameIntoTwoLines(name);
-                return line2 ? [line1, line2] : [line1]; // Return an array of lines
+                return line2 ? [line1, line2] : [line1];
             })
             .enter()
             .append("tspan")
@@ -197,7 +193,7 @@ const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlap
                 const parentNode = nodes[i].parentNode;
                 return d3.select(parentNode).attr("x");
             })
-            .attr("dy", (d, i) => (i === 0 ? "0" : "1.2em")) // Adjust line spacing
+            .attr("dy", (d, i) => (i === 0 ? "0" : "1.2em"))
             .text((d) => d);
 
         // Add click handler for fund names
@@ -211,7 +207,6 @@ const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlap
     // Calculate overlap metrics
     const getOverlapMetrics = (selectedFund: number | null) => {
         if (selectedFund === null) {
-            // Calculate overall metrics when no fund is selected
             const allStocks = new Set(links.map((link) => link.target));
             const totalStocks = allStocks.size;
             const totalLinks = links.length;
@@ -221,7 +216,6 @@ const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlap
                 overlapPercentage: ((totalLinks / (funds.length * stocks.length)) * 100).toFixed(2) + "%",
             };
         } else {
-            // Calculate metrics for the selected fund
             const connectedStocks = new Set(
                 links.filter((link) => link.fundId === selectedFund).map((link) => link.target)
             );

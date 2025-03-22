@@ -15,9 +15,8 @@ import {
     Filler
 } from 'chart.js';
 import { Investments } from "@/types";
-import { PerformanceMetricsSkeleton } from "./PerformanceMetricsSkeleton"; // Import the skeleton component
+import { PerformanceMetricsSkeleton } from "./PerformanceMetricsSkeleton";
 
-// Register ChartJS components
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -38,26 +37,24 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
         labels: [],
         datasets: [],
     });
-    const [isLoading, setIsLoading] = useState(true); // State for skeleton loading
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Static colors for 5 investments
     const investmentColors = [
-        '#0088FF', // Blue
-        '#FF6384', // Pink
-        '#36A2EB', // Light Blue
-        '#FFCE56', // Yellow
-        '#4BC0C0', // Teal
+        '#0088FF',
+        '#FF6384',
+        '#36A2EB',
+        '#FFCE56',
+        '#4BC0C0',
     ];
 
-    // Function to calculate portfolio value over time for each investment
     const calculatePortfolioValue = (period: string) => {
         const currentDate = new Date();
         const periodMap: { [key: string]: number } = {
-            '3M': 3,  // 3 months
-            '6M': 6,  // 6 months
-            '1Y': 12, // 1 year
-            '3Y': 36, // 3 years
-            '5Y': 60, // 5 years
+            '3M': 3,
+            '6M': 6,
+            '1Y': 12,
+            '3Y': 36,
+            '5Y': 60,
         };
 
         const months = periodMap[period];
@@ -66,12 +63,11 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
             const data = [];
             for (let i = 0; i < months; i++) {
                 const date = new Date(currentDate);
-                date.setMonth(currentDate.getMonth() - (months - i - 1)); // Corrected date calculation
+                date.setMonth(currentDate.getMonth() - (months - i - 1));
                 if (index === 0) {
                     labels.push(`${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`);
                 }
 
-                // Calculate investment value for this month
                 const monthsSinceInvestment = (date.getFullYear() - new Date(investment.investment_date).getFullYear()) * 12 +
                     (date.getMonth() - new Date(investment.investment_date).getMonth());
                 const growth = Math.pow(1 + investment.returns / 100, monthsSinceInvestment / 12);
@@ -81,7 +77,7 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
             return {
                 label: investment.mutual_fund_name,
                 data,
-                borderColor: investmentColors[index % investmentColors.length], // Use static colors
+                borderColor: investmentColors[index % investmentColors.length],
                 backgroundColor: 'rgba(0, 136, 255, 0.1)',
                 tension: 0.4,
                 fill: false,
@@ -98,7 +94,6 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
             datasets,
         });
 
-        // Recalculate total portfolio value and returns for the selected period
         const totalValue = datasets.reduce((sum, dataset) => sum + dataset.data[0], 0); // Latest value
         const totalInitial = investments.reduce((sum, investment) => sum + investment.amount_invested, 0);
         const returns = totalValue - totalInitial;
@@ -109,18 +104,16 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
         setReturnPercentage(percentage);
     };
 
-    // Update chart data when time period changes
     useEffect(() => {
         calculatePortfolioValue(timePeriod);
     }, [timePeriod, investments]);
 
-    // Simulate loading for 5 seconds
     useEffect(() => {
         const timer = setTimeout(() => {
-            setIsLoading(false); // Hide skeleton after 5 seconds
+            setIsLoading(false);
         }, 500);
 
-        return () => clearTimeout(timer); // Cleanup timer
+        return () => clearTimeout(timer);
     }, []);
 
     const chartOptions = {
@@ -169,7 +162,7 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
     return (
         <>
             {isLoading ? (
-                <PerformanceMetricsSkeleton /> // Show skeleton while loading
+                <PerformanceMetricsSkeleton />
             ) : (
                 <>
                     <div className="mb-6">
