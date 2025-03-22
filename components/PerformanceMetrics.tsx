@@ -204,8 +204,8 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
                                 key={period}
                                 className={`px-4 py-1 rounded text-sm ${
                                     timePeriod === period
-                                        ? 'bg-card-bg text-white'
-                                        : 'bg-gray-900 text-text-100'
+                                        ? 'bg-card-bg text-text-100'
+                                        : 'bg-dark-200 text-text-100'
                                 }`}
                                 onClick={() => setTimePeriod(period)}
                             >
