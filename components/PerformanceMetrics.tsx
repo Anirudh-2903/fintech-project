@@ -118,7 +118,7 @@ const PerformanceMetrics = ({ investments }: { investments: Investments[] }) => 
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsLoading(false); // Hide skeleton after 5 seconds
-        }, 1000);
+        }, 500);
 
         return () => clearTimeout(timer); // Cleanup timer
     }, []);
