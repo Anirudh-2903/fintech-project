@@ -39,4 +39,5 @@ export type StockAllocations = {
     mutual_fund_id: number
     percentage: number
     stock_name: string
+    sector: string
 };

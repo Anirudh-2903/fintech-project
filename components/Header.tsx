@@ -11,7 +11,7 @@ const Header = () => {
                     <nav className="flex space-x-8">
                             <a href="#" className="px-2 py-1 text-text-300">Home</a>
                             <a href="#" className="px-2 py-1 relative group text-text-100 font-bold">Portfolio
-                                <div className="absolute left-0 right-0 -bottom-[20px] h-0.5 bg-blue-500"></div>
+                                <div className="absolute left-0 right-0 -bottom-[20px] h-0.5 bg-card-bg"></div>
                             </a>
                             <a href="#" className="px-2 py-1 text-text-300">Mutual Funds</a>
                             <a href="#" className="px-2 py-1 text-text-300">Tools</a>

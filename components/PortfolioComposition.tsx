@@ -55,8 +55,8 @@ const PortfolioComposition = (
 
     return (
         <main className="container mx-auto py-10">
-            <SectorAllocation data={transformedSectorAllocations} />
-            <FundOverlapSankeyChart />
+            <SectorAllocation data={transformedSectorAllocations}  stockAllocations={stock_allocations}  mutualFunds={mutual_funds}/>
+            <FundOverlapSankeyChart  mutual_funds={mutual_funds} stock_allocations={stock_allocations} />
         </main>
     );
 };

@@ -19,6 +19,8 @@ export default async function Dashboard() {
   const { data: sector_allocations } = await supabase.from('sector_allocations').select()
   const { data: stock_allocations } = await supabase.from('stock_allocations').select()
 
+
+
   // Calculate total initial investment
   const totalInitialInvestment = investments?.reduce((sum, investment) => sum + investment.amount_invested, 0) || 0;
 

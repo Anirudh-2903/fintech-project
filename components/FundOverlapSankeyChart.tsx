@@ -1,84 +1,80 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import * as d3 from 'd3';
-import * as d3Sankey from 'd3-sankey';
+import React, { useEffect, useRef, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import * as d3 from "d3";
+import * as d3Sankey from "d3-sankey";
+import { MutualFunds, StockAllocations } from "@/types";
 
-const FundOverlapSankeyChart = () => {
+interface FundOverlapSankeyChartProps {
+    mutual_funds: MutualFunds[];
+    stock_allocations: StockAllocations[];
+}
+
+const FundOverlapSankeyChart = ({ mutual_funds, stock_allocations }: FundOverlapSankeyChartProps) => {
     const chartRef = useRef(null);
-    const [selectedFund, setSelectedFund] = useState(null);
-    const funds = [
-        { name: "Nippon Large Cap Fund - Direct Plan", color: "#a08f5d", id: 0 },
-        { name: "Motilal Large Cap Fund - Direct Plan", color: "#1e6091", id: 1 },
-        { name: "HDFC Large Cap Fund", color: "#8b5d3b", id: 2 },
-        { name: "ICICI Prudential Midcap Fund", color: "#5b6d35", id: 3 }
-    ];
+    const [selectedFund, setSelectedFund] = useState<number | null>(null);
 
-    const stocks = [
-        { name: "HDFC LTD.", color: "#e5b012", id: 4 },
-        { name: "RIL", color: "#1ea361", id: 5 },
-        { name: "INFY", color: "#bb49d3", id: 6 },
-        { name: "TCS", color: "#17b8c1", id: 7 },
-        { name: "HDFCBANK", color: "#e5504d", id: 8 },
-        { name: "BHARTIARTL", color: "#e57e42", id: 9 }
-    ];
+    // Map mutual_funds to the funds array
+    const funds = mutual_funds.map((fund, index) => ({
+        name: fund.fund_name,
+        color: ["#a08f5d", "#1e6091", "#8b5d3b", "#5b6d35"][index % 4], // Assign colors in a cycle
+        id: index,
+    }));
 
-    // Create nodes array
-    const nodes = [...funds, ...stocks];
+    // Utility function to split names into two lines
+    const splitNameIntoTwoLines = (name: string, maxChars: number = 15): string[] => {
+        const words = name.split(" ");
+        let line1 = "";
+        let line2 = "";
+        for (const word of words) {
+            if ((line1 + word).length <= maxChars) {
+                line1 += (line1 ? " " : "") + word;
+            } else {
+                line2 += (line2 ? " " : "") + word;
+            }
+        }
+        return [line1, line2];
+    };
 
-    // Create links with dummy values (you'd replace these with real data)
-    const links = [
-        // Nippon Large Cap Fund connections
-        { source: 0, target: 4, value: 20, fundId: 0 },
-        { source: 0, target: 5, value: 15, fundId: 0 },
-        { source: 0, target: 6, value: 10, fundId: 0 },
-        { source: 0, target: 7, value: 12, fundId: 0 },
-        { source: 0, target: 9, value: 8, fundId: 0 },
+    // Extract unique stocks from stock_allocations
+    const uniqueStocks = Array.from(new Set(stock_allocations.map((allocation) => allocation.stock_name)));
 
-        // Motilal Large Cap Fund connections
-        { source: 1, target: 4, value: 15, fundId: 1 },
-        { source: 1, target: 5, value: 18, fundId: 1 },
-        { source: 1, target: 6, value: 14, fundId: 1 },
-        { source: 1, target: 7, value: 16, fundId: 1 },
-        { source: 1, target: 9, value: 10, fundId: 1 },
+    // Map unique stocks to the stocks array
+    const stocks = uniqueStocks.map((stock, index) => ({
+        name: stock,
+        color: ["#e5b012", "#1ea361", "#bb49d3", "#17b8c1", "#e5504d", "#e57e42"][index % 6], // Assign colors in a cycle
+        id: funds.length + index, // Ensure unique IDs by offsetting with funds.length
+    }));
 
-        // HDFC Large Cap Fund connections
-        { source: 2, target: 4, value: 25, fundId: 2 },
-        { source: 2, target: 6, value: 8, fundId: 2 },
-        { source: 2, target: 7, value: 20, fundId: 2 },
-        { source: 2, target: 8, value: 22, fundId: 2 },
-        { source: 2, target: 9, value: 6, fundId: 2 },
-
-        // ICICI Prudential Midcap Fund connections
-        { source: 3, target: 4, value: 5, fundId: 3 },
-        { source: 3, target: 6, value: 10, fundId: 3 },
-        { source: 3, target: 7, value: 6, fundId: 3 },
-        { source: 3, target: 8, value: 7, fundId: 3 },
-        { source: 3, target: 9, value: 18, fundId: 3 }
-    ];
+    // Create links from stock_allocations
+    const links = stock_allocations.map((allocation) => {
+        const fundIndex = mutual_funds.findIndex((fund) => fund.id === allocation.mutual_fund_id);
+        const stockIndex = uniqueStocks.findIndex((stock) => stock === allocation.stock_name);
+        return {
+            source: fundIndex, // Index of the fund in the funds array
+            target: funds.length + stockIndex, // Index of the stock in the stocks array
+            value: allocation.percentage, // Use the percentage as the link value
+            fundId: fundIndex, // ID of the fund for highlighting
+        };
+    });
 
     useEffect(() => {
         if (chartRef.current) {
             drawSankey();
         }
-        // Recalculate metrics when selectedFund changes
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { stockCount, overlapPercentage } = getOverlapMetrics(selectedFund);
-        // You might want to set these values in state if you need to use them elsewhere
-    }, [selectedFund]);
-
-
+    }, [selectedFund, mutual_funds, stock_allocations]);
 
     const drawSankey = () => {
         // Clear previous chart
         d3.select(chartRef.current).selectAll("*").remove();
 
-        // Set dimensions
-        const margin = { top: 10, right: 100, bottom: 0, left: 200 };
+        // Set dimensions with reduced margins
+        const margin = { top: 10, right: 80, bottom: 10, left: 85 }; // Reduced margins
         const width = 900 - margin.left - margin.right;
         const height = 500 - margin.top - margin.bottom;
 
@@ -90,7 +86,6 @@ const FundOverlapSankeyChart = () => {
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // Define funds and stocks
         // Set up Sankey generator
         const sankey = d3Sankey.sankey()
             .nodeWidth(30)
@@ -99,8 +94,8 @@ const FundOverlapSankeyChart = () => {
 
         // Generate layout
         const sankeyData = sankey({
-            nodes: nodes.map(d => Object.assign({}, d)),
-            links: links.map(d => Object.assign({}, d))
+            nodes: [...funds, ...stocks].map((d) => Object.assign({}, d)),
+            links: links.map((d) => Object.assign({}, d)),
         });
 
         // Draw links
@@ -110,8 +105,8 @@ const FundOverlapSankeyChart = () => {
             .enter()
             .append("path")
             .attr("d", d3Sankey.sankeyLinkHorizontal())
-            .attr("stroke-width", d => Math.max(1, d.width))
-            .attr("stroke", d => {
+            .attr("stroke-width", (d) => Math.max(1, d.width))
+            .attr("stroke", (d) => {
                 // Highlight links of selected fund, dim others
                 if (selectedFund === null) {
                     return "rgba(150, 150, 150, 0.3)";
@@ -122,7 +117,7 @@ const FundOverlapSankeyChart = () => {
                 }
             })
             .attr("fill", "none")
-            .attr("class", d => `link-${d.fundId}`);
+            .attr("class", (d) => `link-${d.fundId}`);
 
         // Draw nodes
         const nodes_g = svg.append("g")
@@ -133,11 +128,11 @@ const FundOverlapSankeyChart = () => {
 
         // Add rectangles for nodes
         nodes_g.append("rect")
-            .attr("x", d => d.x0)
-            .attr("y", d => d.y0)
-            .attr("height", d => d.y1 - d.y0)
-            .attr("width", d => d.x1 - d.x0)
-            .attr("fill", d => {
+            .attr("x", (d) => d.x0)
+            .attr("y", (d) => d.y0)
+            .attr("height", (d) => d.y1 - d.y0)
+            .attr("width", (d) => d.x1 - d.x0)
+            .attr("fill", (d) => {
                 // Highlight nodes of selected fund or connected stocks
                 if (selectedFund === null) {
                     return d.color;
@@ -146,7 +141,7 @@ const FundOverlapSankeyChart = () => {
                     return d.id === selectedFund ? d.color : `${d.color}88`;
                 } else {
                     // This is a stock - check if it's connected to the selected fund
-                    const isConnected = links.some(link =>
+                    const isConnected = links.some((link) =>
                         link.fundId === selectedFund && link.target === d.id
                     );
                     return isConnected ? d.color : `${d.color}88`;
@@ -154,8 +149,8 @@ const FundOverlapSankeyChart = () => {
             })
             .attr("rx", 4)
             .attr("ry", 4)
-            .attr("cursor", d => d.id < funds.length ? "pointer" : "default")
-            .attr("class", d => `node-${d.id}`)
+            .attr("cursor", (d) => (d.id < funds.length ? "pointer" : "default"))
+            .attr("class", (d) => `node-${d.id}`)
             .on("click", (event, d) => {
                 // Only make funds clickable
                 if (d.id < funds.length) {
@@ -166,58 +161,80 @@ const FundOverlapSankeyChart = () => {
 
         // Add labels for nodes
         nodes_g.append("text")
-            .attr("x", d => d.index < funds.length ? d.x0 - 6 : d.x1 + 6)
-            .attr("y", d => (d.y1 + d.y0) / 2)
-            .attr("dy", "0.35em")
-            .attr("text-anchor", d => d.index < funds.length ? "end" : "start")
-            .text(d => d.name)
-            .attr("font-size", "10px") // Adjust font size if necessary
-            .attr("fill", d => {
+            .attr("x", (d) => (d.id < funds.length ? d.x0 - 6 : d.x1 + 6))
+            .attr("y", (d) => (d.y1 + d.y0) / 2)
+            .attr("dy", (d) => {
+                const name = d.name;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const [line1, line2] = splitNameIntoTwoLines(name);
+                // Adjust vertical offset based on the number of lines
+                return line2 ? "-0.6em" : "0.35em"; // Move up slightly for two-line labels
+            })
+            .attr("text-anchor", (d) => (d.id < funds.length ? "end" : "start"))
+            .attr("font-size", "10px")
+            .attr("fill", (d) => {
                 if (selectedFund === null) {
                     return "white";
                 } else if (d.id < funds.length) {
                     return d.id === selectedFund ? "white" : "rgba(255, 255, 255, 0.5)";
                 } else {
-                    const isConnected = links.some(link =>
+                    const isConnected = links.some((link) =>
                         link.fundId === selectedFund && link.target === d.id
                     );
                     return isConnected ? "white" : "rgba(255, 255, 255, 0.5)";
                 }
             })
-            .attr("cursor", d => d.id < funds.length ? "pointer" : "default")
+            .attr("cursor", (d) => (d.id < funds.length ? "pointer" : "default"))
+            .selectAll("tspan")
+            .data((d) => {
+                const name = d.name;
+                const [line1, line2] = splitNameIntoTwoLines(name);
+                return line2 ? [line1, line2] : [line1]; // Return an array of lines
+            })
+            .enter()
+            .append("tspan")
+            .attr("x", (d, i, nodes) => {
+                const parentNode = nodes[i].parentNode;
+                return d3.select(parentNode).attr("x");
+            })
+            .attr("dy", (d, i) => (i === 0 ? "0" : "1.2em")) // Adjust line spacing
+            .text((d) => d);
+
+        // Add click handler for fund names
+        nodes_g.selectAll("text")
             .on("click", (event, d) => {
                 if (d.id < funds.length) {
                     setSelectedFund(selectedFund === d.id ? null : d.id);
                 }
             });
     };
-
     // Calculate overlap metrics
-
-
-    const getOverlapMetrics = (selectedFund) => {
+    const getOverlapMetrics = (selectedFund: number | null) => {
         if (selectedFund === null) {
             // Calculate overall metrics when no fund is selected
-            const allStocks = new Set(links.map(link => link.target));
+            const allStocks = new Set(links.map((link) => link.target));
             const totalStocks = allStocks.size;
             const totalLinks = links.length;
 
             return {
                 stockCount: totalStocks,
-                overlapPercentage: ((totalLinks / (funds.length * stocks.length)) * 100).toFixed(2) + "%"
+                overlapPercentage: ((totalLinks / (funds.length * stocks.length)) * 100).toFixed(2) + "%",
             };
         } else {
             // Calculate metrics for the selected fund
-            const connectedStocks = new Set(links.filter(link => link.fundId === selectedFund).map(link => link.target));
+            const connectedStocks = new Set(
+                links.filter((link) => link.fundId === selectedFund).map((link) => link.target)
+            );
             const stockCount = connectedStocks.size;
             const overlapPercentage = ((stockCount / stocks.length) * 100).toFixed(2) + "%";
 
             return {
                 stockCount,
-                overlapPercentage
+                overlapPercentage,
             };
         }
     };
+
     const { stockCount, overlapPercentage } = getOverlapMetrics(selectedFund);
 
     return (
@@ -230,7 +247,7 @@ const FundOverlapSankeyChart = () => {
                             <TooltipTrigger asChild>
                                 <Info className="h-4 w-4 text-gray-400" />
                             </TooltipTrigger>
-                            <TooltipContent className="bg-gray-800 text-white border-gray-700">
+                            <TooltipContent className="bg-dark-200 text-white border-dark-200">
                                 <p>Visualizes the stock overlap between funds. Click on a fund to highlight its connections.</p>
                             </TooltipContent>
                         </Tooltip>
@@ -251,13 +268,8 @@ const FundOverlapSankeyChart = () => {
                     className="w-full h-[500px] flex items-center justify-center"
                 />
                 {selectedFund !== null && (
-                    <div className="mt-4 p-2 bg-gray-900 rounded-md text-sm">
-                        <p>Showing connections for: <span className="font-bold">{
-                            selectedFund === 0 ? "Nippon Large Cap Fund" :
-                                selectedFund === 1 ? "Motilal Large Cap Fund" :
-                                    selectedFund === 2 ? "HDFC Large Cap Fund" :
-                                        "ICICI Prudential Midcap Fund"
-                        }</span></p>
+                    <div className="mt-4 p-2 bg-dark-200 rounded-md text-sm">
+                        <p>Showing connections for: <span className="font-bold">{mutual_funds[selectedFund].fund_name}</span></p>
                         <p className="text-gray-400 text-xs mt-1">Click the fund again to clear selection</p>
                     </div>
                 )}

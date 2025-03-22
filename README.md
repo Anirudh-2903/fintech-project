@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Investment Portfolio Dashboard
 
-## Getting Started
+![Dashboard Screenshot](./public/screenshot.png) <!-- Add a screenshot here -->
 
-First, run the development server:
+A modern investment portfolio dashboard built with Next.js, Supabase, and Chart.js. Track your investments, analyze performance metrics, and visualize portfolio composition with responsive and interactive charts.
 
+## Features
+
+- **Performance Metrics**: Interactive line chart showing portfolio growth over time (3M, 6M, 1Y, 3Y, 5Y).
+- **Portfolio Composition**: Visual breakdown by market cap, sectors, and individual stocks.
+- **Responsive Design**: Optimized for mobile and desktop viewing.
+- **Real-time Data**: Powered by Supabase PostgreSQL database.
+- **Skeleton Loading**: Animated loading states for smooth UX.
+- **Key Metrics**:
+    - Current/Initial Investment Values
+    - Best/Worst Performing Funds
+    - Absolute Returns & Percentage Growth
+
+## Tech Stack
+
+**Frontend:**
+- Next.js 15 (App Router)
+- TypeScript
+- Tailwind CSS
+- Shadcn UI Components
+- Chart.js + react-chartjs-2
+
+**Backend:**
+- Supabase (PostgreSQL Database)
+- Supabase JS Client
+
+**Utilities:**
+- React Icons
+- Date-fns
+
+## Setup Instructions
+
+1. **Clone Repository**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Anirudh-2903/fintech-project.git
+cd fintech-project
+```
+2. **Install Dependencies**
+```bash
+npm install --legacy-peer-deps
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Environment Variables**
+- Create .env.local file:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+4. **Run Development Server**
+```bash
+npm run dev
+```
