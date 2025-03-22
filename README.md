@@ -8,7 +8,6 @@ A modern investment portfolio dashboard built with Next.js, Supabase, and Chart.
 
 - **Performance Metrics**: Interactive line chart showing portfolio growth over time (3M, 6M, 1Y, 3Y, 5Y).
 - **Portfolio Composition**: Visual breakdown by market cap, sectors, and individual stocks.
-- **Responsive Design**: Optimized for mobile and desktop viewing.
 - **Real-time Data**: Powered by Supabase PostgreSQL database.
 - **Skeleton Loading**: Animated loading states for smooth UX.
 - **Key Metrics**:
